@@ -1,0 +1,27 @@
+double nearestOccurence = params.start;
+
+if (doc['rrule.freq'].value == 'DAILY') {
+  nearestOccurence = DailyEvent_getNearestOccurenceTime(params.start, eventFirstOccurenceTime, eventEndTime, doc['rrule.interval'].value);
+} else if (doc['rrule.freq'].value == 'MONTHLY') {
+  nearestOccurence = MonthlyEvent_getNearestOccurenceTime(params.start, eventFirstOccurenceTime, eventEndTime, doc['rrule.interval'].value);  
+} else {
+  nearestOccurence = eventFirstOccurenceTime;
+}
+
+if (nearestOccurence < params.start && eventEndTime < params.start) return -1;
+
+double previousOccurence = nearestOccurence;
+int addedScore = 0;
+
+if (doc['rrule.freq'].value == 'DAILY') {
+  previousOccurence = DailyEvent_getPreviousOccurenceTime(nearestOccurence, doc['rrule.interval'].value);
+} else if (doc['rrule.freq'].value == 'MONTHLY') {
+  previousOccurence = nearestOccurence;  
+}
+
+if (
+  params.start >= previousOccurence &&
+  params.start <= previousOccurence + (eventEndTime - eventFirstOccurenceTime)
+) addedScore = 1;
+
+return (params.start / nearestOccurence) + addedScore;

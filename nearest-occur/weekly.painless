@@ -1,0 +1,11 @@
+int getDayOfWeek(long epochMillis) {
+  DayOfWeek dow = DayOfWeek.from(utcDateTimeFromEpochMillis(epochMillis)); 
+  return dow.getValue();
+}
+
+double WeeklyEvent_getNearestOccurenceTime(long start, long startInEpochMillis, long endInEpochMillis, long interval, String[] byDay) {
+  int weeksBetween = (int)Math.ceil(Math.abs(start - startInEpochMillis) / 6.048e+8 * interval);
+  double currentWeek = startInEpochMillis + (daysBetween * 6.048e+8 * interval);
+
+  if (nearest)
+}

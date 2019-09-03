@@ -1,0 +1,21 @@
+ZonedDateTime utcDateTimeFromEpochMillis(long epochMillis) {
+  return Instant.ofEpochMilli(epochMillis).atZone(ZoneId.of('UTC'));
+}
+
+long epochMillisFromLocalDateTime(LocalDateTime localDateTime) {
+  return localDateTime.atZone(ZoneId.of('UTC')).toInstant().toEpochMilli();
+}
+
+double MonthlyEvent_getNearestOccurenceTime(long start, long startInEpochMillis, long endInEpochMillis, int interval) {
+  LocalDateTime firstOccurenceTime = utcDateTimeFromEpochMillis(startInEpochMillis).toLocalDateTime();
+  long monthsBetween = ChronoUnit.MONTHS.between(
+    utcDateTimeFromEpochMillis(startInEpochMillis).toLocalDate(),
+    utcDateTimeFromEpochMillis(start).toLocalDate()
+  );
+
+  return epochMillisFromLocalDateTime(firstOccurenceTime.plusMonths(monthsBetween + interval - monthsBetween % interval));
+}
+
+double MonthlyEvent_getPreviousOccurenceTime(double currentOccurenceTime) {
+  return currentOccurenceTime;
+}
