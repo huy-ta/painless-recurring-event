@@ -1,0 +1,46 @@
+ZonedDateTime utcZDTFromEpoch(long epochMilli) {
+  return Instant.ofEpochMilli(epochMilli).atZone(ZoneId.of('UTC'));
+}
+
+long epochMillisFromLocalDateTime(LocalDateTime localDateTime) {
+  return localDateTime.atZone(ZoneId.of('UTC')).toInstant().toEpochMilli();
+}
+
+ZonedDateTime getFirstDOW(long now, boolean isSundayFirstDOW) {
+  if (isSundayFirstDOW) return utcZDTFromEpoch(now).with(ChronoField.DAY_OF_WEEK, 7).minusWeeks(1).toLocalDate().atStartOfDay(ZoneId.of('UTC'));
+
+  return utcZDTFromEpoch(now).with(ChronoField.DAY_OF_WEEK, 1).toLocalDate().atStartOfDay(ZoneId.of('UTC'));
+}
+
+boolean isInTheSameWeek(long timeA, long timeB, boolean isSundayFirstDOW) {
+  ZonedDateTime firstDOWA = getFirstDOW(timeA, isSundayFirstDOW);
+  ZonedDateTime firstDOWB = getFirstDOW(timeB, isSundayFirstDOW);
+
+  return firstDOWA.toInstant().toEpochMilli() === firstDOWB.toInstant().toEpochMilli();
+}
+
+int getDayOfWeek(long epochMillis, boolean isSundayFirstDOW) {
+  DayOfWeek dow = DayOfWeek.from(utcZDTFromEpoch(epochMillis));
+  int dowInNum = dow.getValue();
+
+  if (isSundayFirstDOW && dowInNum == 7) return 0;
+
+  return dowInNum;
+}
+
+int dowToNumber(String dayOfWeek, boolean isSundayFirstDOW) {
+  if (dayOfWeek == 'MO') return 1;
+  if (dayOfWeek == 'TU') return 2;
+  if (dayOfWeek == 'WE') return 3;
+  if (dayOfWeek == 'TH') return 4;
+  if (dayOfWeek == 'FR') return 5;
+  if (dayOfWeek == 'SA') return 6;
+  if (dayOfWeek == 'SU') return isSundayFirstDOW ? 0 : 7;
+  return -1;
+}
+
+int getNextLeapYear(int year) {
+  int leapYear = (year + 3) & ~3;
+  if (leapYear % 100 == 0) leapYear += 4;
+  return leapYear;
+}

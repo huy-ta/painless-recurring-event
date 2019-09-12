@@ -1,0 +1,13 @@
+ZonedDateTime utcZDTFromEpoch(long epochMilli) {
+  return Instant.ofEpochMilli(epochMilli).atZone(ZoneId.of('UTC'));
+}
+
+ZonedDateTime getFirstDOW(long now, boolean isSundayFirstDOW) {
+  if (isSundayFirstDOW) return utcZDTFromEpoch(now).with(ChronoField.DAY_OF_WEEK, 7).minusWeeks(1).toLocalDate().atStartOfDay(ZoneId.of('UTC'));
+
+  return utcZDTFromEpoch(now).with(ChronoField.DAY_OF_WEEK, 1).toLocalDate().atStartOfDay(ZoneId.of('UTC'));
+}
+
+long now = params.start;
+
+return getFirstDOW(now, false);

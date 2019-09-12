@@ -16,13 +16,7 @@ class PainlessScriptGenerator {
 
 const scriptGenerator = new PainlessScriptGenerator();
 
-scriptGenerator.appendCodeFromFile('./main/daily.painless');
-scriptGenerator.appendCodeFromFile('./main/monthly.painless');
-scriptGenerator.appendCodeFromFile('./main/weekly.painless');
-
-scriptGenerator.appendCodeFromFile('./shared/pre-script.painless');
-
-scriptGenerator.appendCodeFromFile('./shared/post-script.painless');
+scriptGenerator.appendCodeFromFile('./test/test.painless');
 
 fs.writeFileSync('./build/final-script.painless', scriptGenerator.buildString);
 fs.writeFileSync('./build/final-script.min.painless', scriptGenerator.minifiedBuildString);

@@ -1,8 +1,0 @@
-double DailyEvent_getNearestOccurenceTime(long start, long startInEpochMillis, long endInEpochMillis, long interval) {
-  int daysBetween = (int)Math.ceil(Math.abs(start - startInEpochMillis) / 8.64e+7 * interval);
-  return startInEpochMillis + (daysBetween * 8.64e+7 * interval);
-}
-
-double DailyEvent_getPreviousOccurenceTime(double currentOccurenceTime, long interval) {
-  return currentOccurenceTime - 8.64e+7 * interval;
-}

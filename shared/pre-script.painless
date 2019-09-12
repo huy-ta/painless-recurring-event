@@ -1,4 +1,0 @@
-long eventFirstOccurenceTime = doc['start'].date.millis;
-long eventEndTime = doc['end'].date.millis;
-
-if (eventFirstOccurenceTime > params.start) return (double)params.start / eventFirstOccurenceTime;

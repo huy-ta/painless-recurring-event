@@ -1,0 +1,32 @@
+long MonthlyEvent_getNearestOccur(long now, long firstOccur, long interval) {
+  if (firstOccur > now) return firstOccur;
+
+  long monthsBetween = ChronoUnit.MONTHS.between(
+    utcZDTFromEpoch(firstOccur).toLocalDate(),
+    utcZDTFromEpoch(now).toLocalDate()
+  );
+
+  LocalDateTime firstOccurLDT = utcZDTFromEpoch(firstOccur).toLocalDateTime();
+
+  long nearestOccur = epochMillisFromLocalDateTime(
+    firstOccurLDT.plusMonths(monthsBetween + interval - monthsBetween % interval)
+  );
+
+  do {
+    LocalDateTime nearestOccurLDT = utcZDTFromEpoch(nearestOccur).toLocalDateTime();
+
+    if (nearestOccurLDT.getDayOfMonth() == firstOccurLDT.getDayOfMonth()) break;
+
+    nearestOccur = epochMillisFromLocalDateTime(
+      nearestOccurLDT
+        .plusMonths(interval)
+        .with(TemporalAdjusters.lastDayOfMonth())
+    );
+  } while (true);
+
+  return nearestOccur;
+}
+
+double MonthlyEvent_getPreviousOccurenceTime(double currentOccurenceTime) {
+  return currentOccurenceTime;
+}

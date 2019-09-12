@@ -1,0 +1,21 @@
+long YearlyEvent_getNearestOccur(long now, long firstOccur, long interval) {
+  if (firstOccur > now) return firstOccur;
+
+  long yearsBetween = ChronoUnit.YEARS.between(
+    utcZDTFromEpoch(firstOccur).toLocalDate(),
+    utcZDTFromEpoch(now).toLocalDate()
+  );
+
+  LocalDateTime firstOccurLDT = utcZDTFromEpoch(firstOccur).toLocalDateTime();
+
+  long nearestOccur = epochMillisFromLocalDateTime(firstOccurLDT.plusYears(yearsBetween + interval - yearsBetween % interval));
+
+  LocalDateTime nearestOccurLDT = utcZDTFromEpoch(nearestOccur).toLocalDateTime();
+  int nearestOccurYear = nearestOccurLDT.getYear();
+
+while
+  if (firstOccurLDT.getDayOfMonth() != nearestOccurLDT.getDayOfMonth()) 
+    nearestOccur = epochMillisFromLocalDateTime(nearestOccurLDT.plusYears(getNextLeapYear(nearestOccurYear) - nearestOccurYear).plusDays(1));
+
+  return nearestOccur;
+}

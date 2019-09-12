@@ -1,0 +1,33 @@
+long DailyEvent_getNearestOccur(long from, def event) {
+  long occursBetween = (long)Math.ceil(Math.abs(from - event.start) / 86400000 * event.rrule.interval);
+  long nextOccur = event.start + (occursBetween * 86400000 * event.rrule.interval);
+  long previousOccur = nextOccur - 86400000 * event.rrule.interval;
+
+  if (
+    previousOccur >= event.start &&
+    from >= previousOccur &&
+    from <= previousOccur + (event.end - event.start) &&
+    occursBetween <= event.rrule.count
+  ) return previousOccur;
+
+  if (event.rrule.count > 0 && occursBetween >= event.rrule.count) return -1;
+
+  return nextOccur;
+}
+
+def event = [
+  'start': doc['start'].date.millis,
+  'end': doc['end'].date.millis,
+  'rrule': [
+    'freq': doc['rrule.freq'].value,
+    'interval': doc['rrule.interval'].value,
+    'count': doc['rrule.count'].value,
+    'until': doc['rrule.until'].date.millis
+  ]
+];
+
+if (event.start > params.start) return (double)params.start / event.start;
+
+if (event.rrule.until > 0 && event.rrule.until < params.start) return -1;
+
+return DailyEvent_getNearestOccur(params.start, event);

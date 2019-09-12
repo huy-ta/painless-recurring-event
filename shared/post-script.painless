@@ -1,27 +1,32 @@
-double nearestOccurence = params.start;
+def event = [
+  'start': doc['start'].date.millis,
+  'end': doc['end'].date.millis,
+  'rrule': [
+    'freq': doc['rrule.freq'].value,
+    'interval': doc['rrule.interval'].value,
+    'count': doc['rrule.count'].value,
+    'until': doc['rrule.until'].date.millis
+  ]
+];
 
-if (doc['rrule.freq'].value == 'DAILY') {
-  nearestOccurence = DailyEvent_getNearestOccurenceTime(params.start, eventFirstOccurenceTime, eventEndTime, doc['rrule.interval'].value);
-} else if (doc['rrule.freq'].value == 'MONTHLY') {
-  nearestOccurence = MonthlyEvent_getNearestOccurenceTime(params.start, eventFirstOccurenceTime, eventEndTime, doc['rrule.interval'].value);  
+if (event.start > params.start) return (double)params.start / event.start;
+
+if (event.rrule.until > 0 && event.rrule.until < params.start) return -1;
+
+long nearestOccur = params.start;
+
+if (event.rrule.freq == 'DAILY') {
+  nearestOccur = DailyEvent_getNearestOccur(params.start, event);
+} else if (event.rrule.freq == 'MONTHLY') {
+  nearestOccur = MonthlyEvent_getNearestOccur(params.start, event);  
+} else if (event.rrule.freq == 'WEEKLY') {
+  nearestOccur = WeeklyEvent_getNearestOccur(params.start, event);
+} else if (event.rrule.freq == 'YEARLY') {
+  nearestOccur = YearlyEvent_getNearestOccur(params.start, event);
 } else {
-  nearestOccurence = eventFirstOccurenceTime;
+  nearestOccur = event.start;
 }
 
-if (nearestOccurence < params.start && eventEndTime < params.start) return -1;
+if (nearestOccur < params.start && eventEndTime < params.start) return -1;
 
-double previousOccurence = nearestOccurence;
-int addedScore = 0;
-
-if (doc['rrule.freq'].value == 'DAILY') {
-  previousOccurence = DailyEvent_getPreviousOccurenceTime(nearestOccurence, doc['rrule.interval'].value);
-} else if (doc['rrule.freq'].value == 'MONTHLY') {
-  previousOccurence = nearestOccurence;  
-}
-
-if (
-  params.start >= previousOccurence &&
-  params.start <= previousOccurence + (eventEndTime - eventFirstOccurenceTime)
-) addedScore = 1;
-
-return (params.start / nearestOccurence) + addedScore;
+return (double)(params.start / nearestOccur);

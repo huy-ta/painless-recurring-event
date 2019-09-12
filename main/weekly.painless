@@ -1,0 +1,40 @@
+long WeeklyEvent_getNearestOccur(long now, long firstOccur, long interval, String[] byDay) {
+  int weeksBetween = (int)Math.ceil(Math.abs(now - firstOccur) / (6.048e+8 * interval));
+  long nearestOccur = firstOccur + (long)(weeksBetween * 6.048e+8 * interval);
+
+  if (!isInTheSameWeek(now, nearestOccur, false)) {
+    int minDOW = Integer.MAX_VALUE;
+    for (int i = 0; i < byDay.length; i++) {
+      int tempDOW = dowToNumber(byDay[i], false);
+
+      if (tempDOW < minDOW) minDOW = tempDOW;
+    }
+
+    ZonedDateTime firstDOW = getFirstDOW(nearestOccur, false);
+
+    long tempOccur = (long)(firstDOW.toInstant().toEpochMilli() + 8.64e+7 * (minDOW - 1));
+    LocalDateTime tempLDT = utcZDTFromEpoch(firstOccur).toLocalDateTime();
+    tempOccur += tempLDT.getHour() * 3.6e+6 + tempLDT.getMinute() * 60000;
+
+    return tempOccur;
+  }
+
+  nearestOccur = Long.MAX_VALUE;
+  int currentDOW = getDayOfWeek(now, false);
+
+  for (int i = 0; i < byDay.length; i++) {
+    int tempDayOfWeek = dowToNumber(byDay[i], false);
+
+    if (tempDayOfWeek >= currentDOW) {
+      ZonedDateTime firstDOW = getFirstDOW(now, false);
+
+      long tempOccur = (long)(firstDOW.toInstant().toEpochMilli() + 8.64e+7 * (tempDayOfWeek - 1));
+      LocalDateTime tempLDT = utcZDTFromEpoch(firstOccur).toLocalDateTime();
+      tempOccur += tempLDT.getHour() * 3.6e+6 + tempLDT.getMinute() * 60000;
+
+      if (tempOccur > now && tempOccur < nearestOccur) nearestOccur = tempOccur;
+    }
+  }
+
+  return nearestOccur;
+}
